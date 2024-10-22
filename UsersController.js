@@ -28,6 +28,62 @@ class UsersController
         }
 
     }
+    async getOne(req,res)
+    {
+        try{
+            const {id} = req.params
+            if(!id)
+            {
+                res.status(400).json({message:'id не указан'})
+            }
+            const need_user = await users.findById(id)
+            return res.json(need_user)
+        }catch(e)
+        {
+            res.status(500).json(e)
+        }
+    }
+    async update(req, res) {
+        try {
+            const userData = req.body;  
+    
+            if (!userData._id) {
+                return res.status(400).json({ message: 'id не указан' });
+            }
+    
+            const updatedUser = await users.findByIdAndUpdate(userData._id, userData, { new: true });
+    
+            if (!updatedUser) {
+                return res.status(404).json({ message: 'User не найдена' });
+            }
+    
+            return res.json(updatedUser);
+        } catch (e) {
+            return res.status(500).json({ error: e.message });
+        }
+    }
+    async deleteId(req, res) {
+        try {
+            const { id } = req.params;
+    
+            if (!id) {
+                return res.status(400).json({ message: 'id не указан' });
+            }
+    
+            const deletedUser = await users.findByIdAndDelete(id);
+    
+            if (!deletedUser) {
+                return res.status(404).json({ message: 'Пара не найдена' });
+            }
+    
+            return res.json({ message: 'Пара успешно удалена' });
+        } catch (e) {
+            return res.status(500).json({ error: e.message });
+        }
+    }
+    
+    
+    
 }
 
 export default new UsersController();
