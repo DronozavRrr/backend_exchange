@@ -1,11 +1,13 @@
 import exchanges from "./exchanges.js";
+import pairs from "./pairs.js";
 
 class ExchangesController {
     async create(req, res) {
         try {
-            const { what_from, what_to, amount, rate, user_id } = req.body;
-            const exchange = await exchanges.create({ what_from, what_to, amount, rate, user_id });
-            res.json(exchange);
+            const { amount, user_id, pair_id } = req.body;
+            const exchange = await exchanges.create({ amount, user_id,pair_id });
+            const pair = await pairs.findById(pair_id)
+            res.json({exchange,pair});
         } catch (e) {
             res.status(500).json(e);
         }
@@ -27,7 +29,8 @@ class ExchangesController {
                 return res.status(400).json({ message: 'id не указан' });
             }
             const exchange = await exchanges.findById(id);
-            return res.json(exchange);
+            const pair = await pairs.findById(pair_id)
+            return res.json({exchange,pair});
         } catch (e) {
             res.status(500).json(e);
         }
