@@ -1,19 +1,19 @@
 import users from "./users.js";
+import bcrypt from 'bcrypt';
 
 class UsersController
 {
-    async create(req,res)
-    {
-        {
-            try{
-            const {email,password,role} = req.body;
-            const user = await users.create({email,password,role})
-            res.json(user)
-        }
-        catch(e)
-        {
-            res.status(500).json(e)
-        }
+    async create(req, res) {
+        try {
+            const { email, password, role } = req.body;
+            
+            const hashedPassword = bcrypt.hashSync(password, 10); 
+            
+            const user = await users.create({ email, password: hashedPassword, role });
+            res.json(user);
+        } catch (e) {
+            console.log(e)
+            res.status(500).json(e);
         }
     }
     async getAll(req,res)

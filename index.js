@@ -1,6 +1,10 @@
+dotenv.config({ path: './key.env' });
+import dotenv from 'dotenv';
+
 import express from "express"
 import mongoose from "mongoose"
 import router from "./router.js"
+
 
 const PORT = process.env.PORT || 8080
 const DB_URL = 'mongodb+srv://user:user@cryptoexchange.kjgrk.mongodb.net/?retryWrites=true&w=majority&appName=Cryptoexchange'
