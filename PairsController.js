@@ -1,19 +1,29 @@
 import pairs from "./pairs.js";
+import { body, validationResult } from 'express-validator';
 
 class PairsController
 {
-    async create(req,res)
-    {
-        {
-            try{
-            const {first_crypto,second_crypto,course} = req.body;
-            const pair = await pairs.create({ first_crypto,second_crypto,course })
-            res.json(pair)
-        }
-        catch(e)
-        {
-            res.status(500).json(e)
-        }
+    async create(req, res) {
+        try {
+            // Проверка ошибок валидации
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                console.log('Validation errors:', errors.array());  // Логирование ошибок валидации
+                return res.status(400).json({ errors: errors.array() });
+            }
+
+            const { first_crypto, second_crypto, course } = req.body;
+
+            console.log('Creating pair with:', { first_crypto, second_crypto, course }); // Логирование данных
+
+            // Попытка создания пары
+            const pair = await pairs.create({ first_crypto, second_crypto, course });
+
+            console.log('Pair created:', pair);  // Логирование успешного создания
+            res.json(pair);
+        } catch (e) {
+            console.error('Error during pair creation:', e); // Логирование ошибки
+            res.status(500).json({ message: 'Ошибка на сервере', error: e.message });
         }
     }
     async getAll(req,res)

@@ -1,15 +1,18 @@
 import users from "./users.js";
 import bcrypt from 'bcrypt';
+import { body, validationResult } from 'express-validator';
 
 class UsersController
 {
     async create(req, res) {
         try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
             const { email, password, role } = req.body;
-            
             const hashedPassword = bcrypt.hashSync(password, 10); 
-            
-            const user = await users.create({ email, password: hashedPassword, role });
+            const user = await users.create({ email, password, role });
             res.json(user);
         } catch (e) {
             console.log(e)
