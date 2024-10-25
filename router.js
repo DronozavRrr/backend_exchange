@@ -1,9 +1,9 @@
 import { Router } from "express";
-import PairsController from "./PairsController.js";
-import UsersController from "./UsersController.js";
-import ExchangesController from "./ExchangesController.js";
-import { authMiddleware, adminMiddleware } from "./authMiddleware.js"; 
-import AuthController from './authController.js';
+import PairsController from "./Controllers/PairsController.js";
+import UsersController from "./Controllers/UsersController.js";
+import ExchangesController from "./Controllers/ExchangesController.js";
+import { authMiddleware, adminMiddleware } from "./Middleware/authMiddleware.js"; 
+import AuthController from './Controllers/authController.js';
 import { body } from 'express-validator';
 
 const supportedCryptos = ['BTC', 'ETH', 'LTC', 'BNB', 'XRP', 'ADA','USDT','SOL'];
@@ -33,7 +33,7 @@ router.post(
         return true;
     }),
     
-    PairsController.create
+    (req,res) => PairsController.create(req, res) 
 );
 router.get('/pairs', authMiddleware, PairsController.getAll);
 router.get('/pair/id/:id', authMiddleware, PairsController.getOneId);
@@ -59,7 +59,7 @@ router.put(
             if(value <= 0) throw new Error('Курс не может быть меньше или равен нулю');
             return true;
         }),
-     PairsController.update); 
+        (req,res) => PairsController.update(req, res) ); 
 router.delete('/pair/id/:id', authMiddleware, adminMiddleware, PairsController.deleteId);
 router.delete('/pair/name/:name',authMiddleware,adminMiddleware, PairsController.deleteName);
 

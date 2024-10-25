@@ -1,5 +1,5 @@
-import exchanges from "./exchanges.js";
-import pairs from "./pairs.js";
+import exchanges from "../Entitys/exchanges.js";
+import pairs from "../Entitys/pairs.js";
 
 class ExchangesController {
     async create(req, res) {

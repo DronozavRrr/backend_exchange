@@ -1,4 +1,4 @@
-import users from "./users.js";
+import users from "../Entitys/users.js";
 import bcrypt from 'bcrypt';
 import { body, validationResult } from 'express-validator';
 

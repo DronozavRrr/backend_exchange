@@ -1,12 +1,47 @@
-import pairs from "./pairs.js";
+import pairs from "../Entitys/pairs.js";
+import { body, validationResult } from 'express-validator';
+import PairsService from "../Services/PairsService.js";
 
-class PairsService
+class PairsController
 {
-    async create(pair) {
-            const createdPair = await pairs.create(pair)
-            console.log('Pair created:', pair);
-            return createdPair;
+    
+    async isUniquePair(pair) {
+        try {
+            const existingPair = await pairs.findOne({
+                first_crypto: pair.first_crypto,
+                second_crypto: pair.second_crypto
+            });
+    
+            return existingPair === null; 
+        } catch (e) {
+            console.error('Ошибка при проверке уникальности пары:', e);
+            throw new Error('Ошибка при проверке уникальности пары');
+        }
+    }
+    
+    async create (req, res){
+        try {
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                console.log('Validation errors:', errors.array());
+                return res.status(400).json({ errors: errors.array() });
+            }
 
+            const pair = req.body;
+
+            const isUnique = await this.isUniquePair(pair);
+            if (!isUnique) {
+                return res.status(400).json({ message: 'Пара с такими значениями уже существует' });
+            }
+
+            console.log('Creating pair with:', pair);
+            const createdPair = await PairsService.create(pair);
+            console.log('Pair created:', createdPair);
+            res.json(createdPair);
+        } catch (e) {
+            console.error('Error during pair creation:', e);
+            res.status(500).json({ message: 'Ошибка на сервере', error: e.message });
+        }
     }
     async getAll(req,res)
     {
@@ -55,7 +90,7 @@ class PairsService
             res.status(500).json({ error: e.message });
         }
     }
-    async update(req, res) {
+    update = async (req, res) => {
         try {
             const pairData = req.body;  
     
@@ -63,14 +98,20 @@ class PairsService
                 return res.status(400).json({ message: 'id не указан' });
             }
     
-            const updatedPair = await pairs.findByIdAndUpdate(pairData._id, pairData, { new: true });
-    
-            if (!updatedPair) {
+            const existingPair = await pairs.findById(pairData._id);
+            if (!existingPair) {
                 return res.status(404).json({ message: 'Пара не найдена' });
             }
     
+            const isUnique = await this.isUniquePair(pairData);
+            if (!isUnique) {
+                return res.status(400).json({ message: 'Пара с такими значениями уже существует' });
+            }
+            const updatedPair = await pairs.findByIdAndUpdate(pairData._id, pairData, { new: true });
+            
             return res.json(updatedPair);
         } catch (e) {
+            console.log("tut", e);
             return res.status(500).json({ error: e.message });
         }
     }
@@ -112,6 +153,8 @@ class PairsService
             return res.status(500).json({ error: e.message });
         }
     }
+    
+    
 }
 
-export default new PairsService
+export default new PairsController();

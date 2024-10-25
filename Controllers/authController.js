@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import users from "./users.js";
+import users from "../Entitys/users.js";
 class AuthController {
     async login(req, res) {
         try {
