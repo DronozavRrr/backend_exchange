@@ -90,32 +90,28 @@ class PairsController
             res.status(500).json({ error: e.message });
         }
     }
-     update = async (req, res) => {
+    update = async (req, res) => {
         try {
             const pairData = req.body;  
     
             if (!pairData._id) {
                 return res.status(400).json({ message: 'id не указан' });
             }
-            const findedPair = await pairs.findById(pairData._id);
-            const isUnique = await this.isUniquePair(findedPair);
+    
+            const existingPair = await pairs.findById(pairData._id);
+            if (!existingPair) {
+                return res.status(404).json({ message: 'Пара не найдена' });
+            }
+    
+            const isUnique = await this.isUniquePair(pairData);
             if (!isUnique) {
                 return res.status(400).json({ message: 'Пара с такими значениями уже существует' });
             }
-    
             const updatedPair = await pairs.findByIdAndUpdate(pairData._id, pairData, { new: true });
             
-            console.log(updatedPair)
-            if (!updatedPair) {
-                return res.status(404).json({ message: 'Пара не найдена' });
-            }
-
-
-            
-    
             return res.json(updatedPair);
         } catch (e) {
-            console.log("tut")
+            console.log("tut", e);
             return res.status(500).json({ error: e.message });
         }
     }
