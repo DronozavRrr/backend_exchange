@@ -2,24 +2,21 @@ import pairs from "../Entitys/pairs.js";
 import { body, validationResult } from 'express-validator';
 import PairsService from "../Services/PairsService.js";
 
-class PairsController
-{
-    
+class PairsController {
     async isUniquePair(pair) {
         try {
             const existingPair = await pairs.findOne({
                 first_crypto: pair.first_crypto,
                 second_crypto: pair.second_crypto
             });
-    
             return existingPair === null; 
         } catch (e) {
             console.error('Ошибка при проверке уникальности пары:', e);
             throw new Error('Ошибка при проверке уникальности пары');
         }
     }
-    
-    async create (req, res){
+
+    async create(req, res) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -37,124 +34,120 @@ class PairsController
             console.log('Creating pair with:', pair);
             const createdPair = await PairsService.create(pair);
             console.log('Pair created:', createdPair);
-            res.json(createdPair);
+            return res.json(createdPair);
         } catch (e) {
             console.error('Error during pair creation:', e);
-            res.status(500).json({ message: 'Ошибка на сервере', error: e.message });
+            return res.status(500).json({ message: 'Ошибка на сервере', error: e.message });
         }
     }
-    async getAll(req,res)
-    {
-        try{
-            const all_pairs = await pairs.find()
-            return res.json(all_pairs)
-        }catch(e)
-        {
-            
-            res.status(500).json(e)
-        }
 
-    }
-    async getOneId(req,res)
-    {
-        try{
-            const {id} = req.params
-            if(!id)
-            {
-                res.status(400).json({message:'id не указан'})
-            }
-            const need_pair = await pairs.findById(id)
-            return res.json(need_pair)
-        }catch(e)
-        {
-            res.status(500).json(e)
+    async getAll(req, res) {
+        try {
+            const all_pairs = await PairsService.getAll();
+            return res.json(all_pairs);
+        } catch (e) {
+            console.error('Error fetching pairs:', e);
+            return res.status(500).json({ error: e.message });
         }
     }
-    async getOneName(req, res) {
+
+    async getOneId(req, res) {
         try {
-            const { name } = req.params;  
-            console.log(name)
-    
-            if (!name) {
-                return res.status(400).json({ message: 'name не указан' });
+            const { id } = req.params;
+            if (!id) {
+                return res.status(400).json({ message: 'id не указан' });
             }
-    
-            const need_pair = await pairs.find({ first_crypto: name });
-    
+
+            const need_pair = await PairsService.getOneId(id);
             if (!need_pair) {
                 return res.status(404).json({ message: 'Пара не найдена' });
             }
-    
             return res.json(need_pair);
         } catch (e) {
-            res.status(500).json({ error: e.message });
+            console.error('Error fetching pair by ID:', e);
+            return res.status(500).json({ error: e.message });
         }
     }
-    update = async (req, res) => {
+
+    async getOneName(req, res) {
+        try {
+            const { name } = req.params;  
+            if (!name) {
+                return res.status(400).json({ message: 'name не указан' });
+            }
+
+            const need_pair = await PairsService.getOneName(name);
+            if (!need_pair.length) {
+                return res.status(404).json({ message: 'Пара не найдена' });
+            }
+            return res.json(need_pair);
+        } catch (e) {
+            console.error('Error fetching pair by name:', e);
+            return res.status(500).json({ error: e.message });
+        }
+    }
+
+    async update(req, res) {
         try {
             const pairData = req.body;  
-    
             if (!pairData._id) {
                 return res.status(400).json({ message: 'id не указан' });
             }
-    
+
             const existingPair = await pairs.findById(pairData._id);
             if (!existingPair) {
                 return res.status(404).json({ message: 'Пара не найдена' });
             }
-    
+
             const isUnique = await this.isUniquePair(pairData);
             if (!isUnique) {
                 return res.status(400).json({ message: 'Пара с такими значениями уже существует' });
             }
-            const updatedPair = await pairs.findByIdAndUpdate(pairData._id, pairData, { new: true });
-            
+
+            const updatedPair = await PairsService.update(pairData);
             return res.json(updatedPair);
         } catch (e) {
-            console.log("tut", e);
+            console.error('Error updating pair:', e);
             return res.status(500).json({ error: e.message });
         }
     }
+
     async deleteId(req, res) {
         try {
             const { id } = req.params;
-    
             if (!id) {
                 return res.status(400).json({ message: 'id не указан' });
             }
-    
-            const deletedPair = await pairs.findByIdAndDelete(id);
-    
+
+            const deletedPair = await PairsService.deleteId(id);
             if (!deletedPair) {
                 return res.status(404).json({ message: 'Пара не найдена' });
             }
-    
             return res.json({ message: 'Пара успешно удалена' });
         } catch (e) {
+            console.error('Error deleting pair by ID:', e);
             return res.status(500).json({ error: e.message });
         }
     }
-    
+
     async deleteName(req, res) {
         try {
             const { name } = req.params;
-    
             if (!name) {
                 return res.status(400).json({ message: 'Имя не указано' });
             }
-            const deletedPair = await pairs.findOneAndDelete({ first_crypto: name });
-    
+
+            const deletedPair = await PairsService.deleteName(name);
             if (!deletedPair) {
                 return res.status(404).json({ message: 'Пара с таким именем не найдена' });
             }
-    
-            return res.json({ message: 'Пара успешно удалена',deletedPair });
+
+            return res.json({ message: 'Пара успешно удалена', deletedPair });
         } catch (e) {
+            console.error('Error deleting pair by name:', e);
             return res.status(500).json({ error: e.message });
         }
     }
-    
-    
 }
 
 export default new PairsController();
