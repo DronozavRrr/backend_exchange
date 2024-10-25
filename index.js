@@ -1,7 +1,8 @@
 dotenv.config({ path: './key.env' });
 import dotenv from 'dotenv';
+import cors from 'cors'
 
-import express from "express"
+import express from 'express';
 import mongoose from "mongoose"
 import router from "./router.js"
 
@@ -9,7 +10,9 @@ import router from "./router.js"
 const PORT = process.env.PORT || 8080
 const DB_URL = 'mongodb+srv://user:user@cryptoexchange.kjgrk.mongodb.net/?retryWrites=true&w=majority&appName=Cryptoexchange'
 
+
 const app = express()
+app.use(cors());
 
 app.use(express.json())
 app.use('/api',router)

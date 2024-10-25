@@ -24,7 +24,7 @@ class UsersController
             }
             
             const { email, password, role } = req.body;
-            const isUnique = await isUniqueUser({ email })
+            const isUnique = await this.isUniqueUser({ email })
             if (!isUnique) {
                 return res.status(400).json({ message: 'Такой пользователь уже существует' });
             }
