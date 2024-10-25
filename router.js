@@ -6,7 +6,7 @@ import { authMiddleware, adminMiddleware } from "./authMiddleware.js";
 import AuthController from './authController.js';
 import { body } from 'express-validator';
 
-const supportedCryptos = ['BTC', 'ETH', 'LTC', 'BNB', 'XRP', 'ADA','USDT'];
+const supportedCryptos = ['BTC', 'ETH', 'LTC', 'BNB', 'XRP', 'ADA','USDT','SOL'];
 
 
 const router = new Router();

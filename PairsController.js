@@ -19,26 +19,27 @@ class PairsController
         }
     }
     
-    async create(req, res) {
+    create = async (req, res) => {
         try {
-
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                console.log('Validation errors:', errors.array()); 
+                console.log('Validation errors:', errors.array());
                 return res.status(400).json({ errors: errors.array() });
             }
+
+            const pair = req.body;
 
             const isUnique = await this.isUniquePair(pair);
             if (!isUnique) {
                 return res.status(400).json({ message: 'Пара с такими значениями уже существует' });
             }
-            
-            console.log('Creating pair with:', req.body); 
-            const pair = await PairsService.create(req.body);
-            console.log('Pair created:', pair); 
-            res.json(pair);
+
+            console.log('Creating pair with:', pair);
+            const createdPair = await PairsService.create(pair);
+            console.log('Pair created:', createdPair);
+            res.json(createdPair);
         } catch (e) {
-            console.error('Error during pair creation:', e); 
+            console.error('Error during pair creation:', e);
             res.status(500).json({ message: 'Ошибка на сервере', error: e.message });
         }
     }
@@ -89,22 +90,32 @@ class PairsController
             res.status(500).json({ error: e.message });
         }
     }
-    async update(req, res) {
+     update = async (req, res) => {
         try {
             const pairData = req.body;  
     
             if (!pairData._id) {
                 return res.status(400).json({ message: 'id не указан' });
             }
+            const findedPair = await pairs.findById(pairData._id);
+            const isUnique = await this.isUniquePair(findedPair);
+            if (!isUnique) {
+                return res.status(400).json({ message: 'Пара с такими значениями уже существует' });
+            }
     
             const updatedPair = await pairs.findByIdAndUpdate(pairData._id, pairData, { new: true });
-    
+            
+            console.log(updatedPair)
             if (!updatedPair) {
                 return res.status(404).json({ message: 'Пара не найдена' });
             }
+
+
+            
     
             return res.json(updatedPair);
         } catch (e) {
+            console.log("tut")
             return res.status(500).json({ error: e.message });
         }
     }

@@ -4,7 +4,7 @@ class PairsService
 {
     async create(pair) {
             const createdPair = await pairs.create(pair)
-            console.log('Pair created:', pair); 
+            console.log('Pair created:', pair);
             return createdPair;
 
     }
