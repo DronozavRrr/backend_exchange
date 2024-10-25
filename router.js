@@ -74,7 +74,7 @@ router.post(
     '/user',
     body('email').isEmail().withMessage('Некорректный email'),
     body('password').isLength({ min: 6 }).withMessage('Пароль должен быть минимум 6 символов'),
-    UsersController.create
+    (req,res) => UsersController.create(req,res)
 );
 router.get('/users', authMiddleware, adminMiddleware, UsersController.getAll);
 router.get('/user/:id', authMiddleware, adminMiddleware,UsersController.getOne);
@@ -83,7 +83,7 @@ router.put(
     body('email').isEmail().withMessage('Некорректный email'),
     body('password').isLength({ min: 6 }).withMessage('Пароль должен быть минимум 6 символов'),
     authMiddleware, adminMiddleware, 
-    UsersController.update);
+    (req,res) => UsersController.update(req,res));
 router.delete('/user/:id', authMiddleware, adminMiddleware, UsersController.deleteId);
 
 

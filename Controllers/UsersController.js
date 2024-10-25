@@ -4,15 +4,33 @@ import { body, validationResult } from 'express-validator';
 
 class UsersController
 {
+    async isUniqueUser(user) {
+        try {
+            const existingUser = await users.findOne({
+                email: user.email,
+
+            });
+            return existingUser === null; 
+        } catch (e) {
+            console.error('Ошибка при проверке уникальности пользователя:', e);
+            throw new Error('Ошибка при проверке уникальности пользователя');
+        }
+    }
     async create(req, res) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
+            
             const { email, password, role } = req.body;
+            const isUnique = await isUniqueUser({ email })
+            if (!isUnique) {
+                return res.status(400).json({ message: 'Такой пользователь уже существует' });
+            }
             const hashedPassword = bcrypt.hashSync(password, 10); 
             const user = await users.create({ email, password, role });
+
             res.json(user);
         } catch (e) {
             console.log(e)
@@ -53,7 +71,11 @@ class UsersController
             if (!userData._id) {
                 return res.status(400).json({ message: 'id не указан' });
             }
-    
+            const isUnique = await this.isUniqueUser(userData);
+            if (!isUnique) {
+                return res.status(400).json({ message: 'Такой пользователь уже существует' });
+            }
+
             const updatedUser = await users.findByIdAndUpdate(userData._id, userData, { new: true });
     
             if (!updatedUser) {
