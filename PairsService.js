@@ -1,46 +1,12 @@
 import pairs from "./pairs.js";
-import { body, validationResult } from 'express-validator';
-import PairsService from "./pairsService.js";
 
-class PairsController
+class PairsService
 {
-    
-    async isUniquePair(pair) {
-        try {
-            const existingPair = await pairs.findOne({
-                first_crypto: pair.first_crypto,
-                second_crypto: pair.second_crypto
-            });
-    
-            return existingPair === null; 
-        } catch (e) {
-            console.error('Ошибка при проверке уникальности пары:', e);
-            throw new Error('Ошибка при проверке уникальности пары');
-        }
-    }
-    
-    async create(req, res) {
-        try {
-
-            const errors = validationResult(req);
-            if (!errors.isEmpty()) {
-                console.log('Validation errors:', errors.array()); 
-                return res.status(400).json({ errors: errors.array() });
-            }
-
-            const isUnique = await this.isUniquePair(pair);
-            if (!isUnique) {
-                return res.status(400).json({ message: 'Пара с такими значениями уже существует' });
-            }
-            
-            console.log('Creating pair with:', req.body); 
-            const pair = await PairsService.create(req.body);
+    async create(pair) {
+            const createdPair = await pairs.create(pair)
             console.log('Pair created:', pair); 
-            res.json(pair);
-        } catch (e) {
-            console.error('Error during pair creation:', e); 
-            res.status(500).json({ message: 'Ошибка на сервере', error: e.message });
-        }
+            return createdPair;
+
     }
     async getAll(req,res)
     {
@@ -146,8 +112,6 @@ class PairsController
             return res.status(500).json({ error: e.message });
         }
     }
-    
-    
 }
 
-export default new PairsController();
+export default new PairsService
