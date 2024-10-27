@@ -43,13 +43,15 @@ class PairsController {
 
     async getAll(req, res) {
         try {
-            const all_pairs = await PairsService.getAll();
-            return res.json(all_pairs);
+            const all_pairs = await pairs.find();
+            const plainPairs = all_pairs.map(pair => pair.toObject());
+            console.log('Fetched pairs:', plainPairs); 
+            return res.json(plainPairs);
         } catch (e) {
-            console.error('Error fetching pairs:', e);
             return res.status(500).json({ error: e.message });
         }
     }
+    
 
     async getOneId(req, res) {
         try {
@@ -75,7 +77,7 @@ class PairsController {
             if (!name) {
                 return res.status(400).json({ message: 'name не указан' });
             }
-
+    
             const need_pair = await PairsService.getOneName(name);
             if (!need_pair.length) {
                 return res.status(404).json({ message: 'Пара не найдена' });
@@ -86,6 +88,7 @@ class PairsController {
             return res.status(500).json({ error: e.message });
         }
     }
+    
 
     async update(req, res) {
         try {

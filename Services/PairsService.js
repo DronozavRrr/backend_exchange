@@ -10,11 +10,13 @@ class PairsService {
     async getAll(req, res) {
         try {
             const all_pairs = await pairs.find();
+            console.log('Fetched pairs:', all_pairs); // Логирование полученных пар
             return res.json(all_pairs);
         } catch (e) {
             return res.status(500).json({ error: e.message });
         }
     }
+    
 
     async getOneId(req, res) {
         try {
@@ -32,24 +34,16 @@ class PairsService {
         }
     }
 
-    async getOneName(req, res) {
+    async getOneName(name) {
         try {
-            const { name } = req.params;  
-            if (!name) {
-                return res.status(400).json({ message: 'name не указан' });
-            }
-
             const need_pair = await pairs.find({ first_crypto: name });
-
-            if (!need_pair.length) {
-                return res.status(404).json({ message: 'Пара не найдена' });
-            }
-
-            return res.json(need_pair);
+            return need_pair;
         } catch (e) {
-            return res.status(500).json({ error: e.message });
+            console.error('Error fetching pair by name:', e);
+            throw new Error('Database error while fetching pair by name');
         }
     }
+    
 
     async update(req, res) {
         try {
