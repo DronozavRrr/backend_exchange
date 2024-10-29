@@ -68,20 +68,22 @@ class PairsService {
     async deleteId(req, res) {
         try {
             const { id } = req.params;
-
+    
             if (!id) {
                 return res.status(400).json({ message: 'id не указан' });
             }
-
+    
             const deletedPair = await pairs.findByIdAndDelete(id);
-
+    
             if (!deletedPair) {
                 return res.status(404).json({ message: 'Пара не найдена' });
             }
-
-            return res.json({ message: 'Пара успешно удалена' });
+    
+            // Возвращаем удаленный объект для дальнейшей обработки
+            return deletedPair;
         } catch (e) {
-            return res.status(500).json({ error: e.message });
+            console.error('Error deleting pair by ID:', e);
+            throw new Error('Ошибка при удалении пары');
         }
     }
 

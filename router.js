@@ -6,7 +6,7 @@ import { authMiddleware, adminMiddleware } from "./Middleware/authMiddleware.js"
 import AuthController from './Controllers/authController.js';
 import { body } from 'express-validator';
 
-const supportedCryptos = ['BTC', 'ETH', 'LTC', 'BNB', 'XRP', 'ADA','USDT','SOL'];
+const supportedCryptos = ['BTC', 'ETH', 'LTC', 'BNB', 'XRP', 'ADA','USDT','SOL','RUB'];
 
 
 const router = new Router();
@@ -30,6 +30,16 @@ router.post(
     body('course').custom(value =>
     {
         if(value <= 0) throw new Error('Курс не может быть меньше или равен нулю');
+        return true;
+    }),
+    body('type_first_crypto').custom(value =>
+    {
+        if(!["fiat","crypto"].includes(value)) throw new Error('Тип может быть либо фиатом, либо криптовалютой');
+        return true;
+    }),
+    body('type_second_crypto').custom(value =>
+     {
+            if(!["fiat","crypto"].includes(value)) throw new Error('Тип может быть либо фиатом, либо криптовалютой');
         return true;
     }),
     

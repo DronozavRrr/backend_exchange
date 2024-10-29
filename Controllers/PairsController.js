@@ -121,11 +121,12 @@ class PairsController {
             if (!id) {
                 return res.status(400).json({ message: 'id не указан' });
             }
-
-            const deletedPair = await PairsService.deleteId(id);
+    
+            const deletedPair = await PairsService.deleteId(req, res);
             if (!deletedPair) {
                 return res.status(404).json({ message: 'Пара не найдена' });
             }
+    
             return res.json({ message: 'Пара успешно удалена' });
         } catch (e) {
             console.error('Error deleting pair by ID:', e);
