@@ -98,6 +98,15 @@ router.delete('/user/:id', authMiddleware, adminMiddleware, UsersController.dele
 
 
 
+router.post('/bid', authMiddleware, (req, res) => BidsController.create(req, res));
+router.get('/bids', authMiddleware, (req, res) => BidsController.getAll(req, res));
+router.get('/bid/id/:id', authMiddleware, (req, res) => BidsController.getOneId(req, res));
+router.put('/bid', authMiddleware, adminMiddleware, (req, res) => BidsController.update(req, res));
+router.delete('/bid/id/:id', authMiddleware,adminMiddleware, (req, res) => BidsController.deleteId(req, res));
+
+
+
+
 router.post('/login', AuthController.login);
 
 export default router;
