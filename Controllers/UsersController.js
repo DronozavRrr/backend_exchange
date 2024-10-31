@@ -16,6 +16,28 @@ class UsersController
             throw new Error('Ошибка при проверке уникальности пользователя');
         }
     }
+    async getProfile(req, res) {
+        try {
+            if (!req.user || !req.user.id) {
+                return res.status(400).json({ message: 'Ошибка авторизации: пользователь не определён' });
+            }
+    
+            const userId = req.user.id;
+            console.log('userId:', userId);
+    
+            const user = await users.findById(userId);
+            if (!user) {
+                return res.status(404).json({ message: 'Пользователь не найден' });
+            }
+    
+            res.json(user);
+        } catch (error) {
+            console.error("Ошибка при получении профиля:", error);
+            res.status(500).json({ message: "Ошибка сервера при получении профиля" });
+        }
+    }
+    
+    
     async create(req, res) {
         try {
             const errors = validationResult(req);

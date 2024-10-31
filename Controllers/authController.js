@@ -21,6 +21,9 @@ class AuthController {
                 process.env.JWT_SECRET,
                 { expiresIn: '1h' }
             );
+            
+            console.log("Generated token payload:", { id: user._id, role: user.role }); // Log payload
+            
 
             return res.json({ token });
         } catch (e) {

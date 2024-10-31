@@ -86,6 +86,7 @@ router.post(
     body('password').isLength({ min: 6 }).withMessage('Пароль должен быть минимум 6 символов'),
     (req,res) => UsersController.create(req,res)
 );
+router.get('/user/profile',authMiddleware, (req, res) => UsersController.getProfile(req,res));
 router.get('/users', authMiddleware, adminMiddleware, UsersController.getAll);
 router.get('/user/:id', authMiddleware, adminMiddleware,UsersController.getOne);
 router.put(
@@ -108,5 +109,7 @@ router.delete('/bid/id/:id', authMiddleware,adminMiddleware, (req, res) => BidsC
 
 
 router.post('/login', AuthController.login);
+
+  
 
 export default router;
