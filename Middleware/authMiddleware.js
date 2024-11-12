@@ -3,22 +3,27 @@ import jwt from 'jsonwebtoken';
 export const authMiddleware = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
-    if (!authHeader) {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ message: "Неавторизован" });
     }
 
     const token = authHeader.split(' ')[1];
 
+    if (!token) {
+        return res.status(401).json({ message: "Токен отсутствует" });
+    }
+
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded; // Ensure req.user is set
-        console.log("Authenticated user:", req.user); // Log the authenticated user
+        req.user = decoded; 
+        console.log("Authenticated user:", req.user); 
         next();
     } catch (e) {
-        console.error("Token verification failed:", e); // Log any token verification error
+        console.error("Token verification failed:", e);
         return res.status(401).json({ message: "Неавторизован" });
     }
 };
+
 
 
 

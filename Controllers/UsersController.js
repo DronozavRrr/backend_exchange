@@ -51,7 +51,7 @@ class UsersController
                 return res.status(400).json({ message: 'Такой пользователь уже существует' });
             }
             const hashedPassword = bcrypt.hashSync(password, 10); 
-            const user = await users.create({ email, password, role });
+            const user = await users.create({ email, password: hashedPassword, role });
 
             res.json(user);
         } catch (e) {
