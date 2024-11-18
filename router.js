@@ -1,6 +1,7 @@
 import { Router } from "express";
 import PairsController from "./Controllers/PairsController.js";
 import UsersController from "./Controllers/UsersController.js";
+import BidsController from "./Controllers/BidsController.js";
 import ExchangesController from "./Controllers/ExchangesController.js";
 import { authMiddleware, adminMiddleware } from "./Middleware/authMiddleware.js"; 
 import AuthController from './Controllers/authController.js';
