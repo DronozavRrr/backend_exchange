@@ -8,7 +8,7 @@ class UsersController
         try {
             const existingUser = await users.findOne({
                 email: user.email,
-
+                role: user.role
             });
             return existingUser === null; 
         } catch (e) {
