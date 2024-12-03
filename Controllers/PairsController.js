@@ -9,7 +9,8 @@ class PairsController {
                 first_crypto: pair.first_crypto,
                 second_crypto: pair.second_crypto
             });
-            return existingPair === null; 
+            return pair !== existingPair
+            return (existingPair === null ); 
         } catch (e) {
             console.error('Ошибка при проверке уникальности пары:', e);
             throw new Error('Ошибка при проверке уникальности пары');
