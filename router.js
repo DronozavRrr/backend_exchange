@@ -1,17 +1,19 @@
+// router.js
 import { Router } from "express";
 import PairsController from "./Controllers/PairsController.js";
 import UsersController from "./Controllers/UsersController.js";
 import BidsController from "./Controllers/BidsController.js";
 import ExchangesController from "./Controllers/ExchangesController.js";
-import { authMiddleware, adminMiddleware } from "./Middleware/authMiddleware.js"; 
+import LogsController from "./Controllers/LogsController.js"; // Импорт контроллера логов
 import AuthController from './Controllers/authController.js';
+import { authMiddleware, adminMiddleware } from "./Middleware/authMiddleware.js"; 
 import { body } from 'express-validator';
 
 const supportedCryptos = ['BTC', 'ETH', 'LTC', 'BNB', 'XRP', 'ADA','USDT','SOL','RUB'];
 
-
 const router = new Router();
 
+// Маршруты для пар (pairs) — как у вас уже есть
 router.post(
     '/pair',
     authMiddleware,
@@ -74,13 +76,14 @@ router.put(
 router.delete('/pair/id/:id', authMiddleware, adminMiddleware, PairsController.deleteId);
 router.delete('/pair/name/:name',authMiddleware,adminMiddleware, PairsController.deleteName);
 
-
-router.post('/exchange',authMiddleware, ExchangesController.create);
+// Маршруты для обменов (exchanges)
+router.post('/exchange', authMiddleware, ExchangesController.create);
 router.get('/exchanges', ExchangesController.getAll);
 router.get('/exchange/id/:id', ExchangesController.getOneId);
 router.put('/exchange', authMiddleware, adminMiddleware, ExchangesController.update);
 router.delete('/exchange/id/:id', authMiddleware, adminMiddleware, ExchangesController.deleteId);
 
+// Маршруты для пользователей (users)
 router.post(
     '/user',
     body('email').isEmail().withMessage('Некорректный email'),
@@ -98,19 +101,24 @@ router.put(
     (req,res) => UsersController.update(req,res));
 router.delete('/user/:id', authMiddleware, adminMiddleware, UsersController.deleteId);
 
-
-
+// Маршруты для заявок (bids)
 router.post('/bid', authMiddleware, (req, res) => BidsController.create(req, res));
 router.get('/bids', authMiddleware, (req, res) => BidsController.getAll(req, res));
 router.get('/bid/id/:id', authMiddleware, (req, res) => BidsController.getOneId(req, res));
 router.put('/bid', authMiddleware, adminMiddleware, (req, res) => BidsController.update(req, res));
 router.delete('/bid/id/:id', authMiddleware,adminMiddleware, (req, res) => BidsController.deleteId(req, res));
 
+// Маршруты для логов
+router.post('/logs', authMiddleware, adminMiddleware, (req, res) => LogsController.create(req, res));
+router.get('/logs', authMiddleware, adminMiddleware, (req, res) => LogsController.getAll(req, res));
 
-
-
+// Маршрут для аутентификации
 router.post('/login', AuthController.login);
 
-  
+
+// router.js (дополнение)
+router.post('/logs', authMiddleware, adminMiddleware, (req, res) => LogsController.create(req, res));
+router.get('/logs', authMiddleware, adminMiddleware, (req, res) => LogsController.getAll(req, res));
+
 
 export default router;
