@@ -90,7 +90,7 @@ router.post(
     '/user',
     body('email').isEmail().withMessage('Некорректный email'),
     body('password').isLength({ min: 6 }).withMessage('Пароль должен быть минимум 6 символов'),
-    (req,res) => UsersController.create(req,res)
+    (req,res) => asyncHandler(UsersController.create(req,res))
 );
 router.get('/user/profile',authMiddleware, (req, res) => UsersController.getProfile(req,res));
 router.get('/users', authMiddleware, adminMiddleware, UsersController.getAll);
@@ -113,7 +113,7 @@ router.delete('/bid/id/:id', authMiddleware, adminMiddleware, asyncHandler(BidsC
 
 
 // Маршрут для аутентификации
-router.post('/login', AuthController.login);
+router.post('/login', asyncHandler(AuthController.login));
 
 
 // router.js (дополнение)

@@ -1,6 +1,7 @@
 import users from "../Entitys/users.js";
 import bcrypt from 'bcrypt';
 import { body, validationResult } from 'express-validator';
+import Log from "../Entitys/logs.js"; 
 
 class UsersController
 {
@@ -16,6 +17,22 @@ class UsersController
             throw new Error('Ошибка при проверке уникальности пользователя');
         }
     }
+
+    createLog = async (userId, action, details = {}) => {
+        try {
+            const log = new Log({
+                userId,
+                action,
+                details
+            });
+            await log.save();
+        } catch (error) {
+            console.error('Ошибка при создании лога:', error);
+
+        }
+    }
+
+
     async getProfile(req, res) {
         try {
             if (!req.user || !req.user.id) {
@@ -52,7 +69,7 @@ class UsersController
             }
             const hashedPassword = bcrypt.hashSync(password, 10); 
             const user = await users.create({ email, password: hashedPassword, role });
-
+            await this.createLog(user._id, 'create_user', { email: user.email, role:user.role });
             res.json(user);
         } catch (e) {
             console.log(e)
