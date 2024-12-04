@@ -8,6 +8,8 @@ import LogsController from "./Controllers/LogsController.js"; // Импорт к
 import AuthController from './Controllers/authController.js';
 import { authMiddleware, adminMiddleware } from "./Middleware/authMiddleware.js"; 
 import { body } from 'express-validator';
+import { asyncHandler } from './utils/asyncHandler.js';
+
 
 const supportedCryptos = ['BTC', 'ETH', 'LTC', 'BNB', 'XRP', 'ADA','USDT','SOL','RUB'];
 
@@ -102,23 +104,21 @@ router.put(
 router.delete('/user/:id', authMiddleware, adminMiddleware, UsersController.deleteId);
 
 // Маршруты для заявок (bids)
-router.post('/bid', authMiddleware, (req, res) => BidsController.create(req, res));
-router.get('/bids', authMiddleware, (req, res) => BidsController.getAll(req, res));
-router.get('/bid/id/:id', authMiddleware, (req, res) => BidsController.getOneId(req, res));
-router.put('/bid', authMiddleware, adminMiddleware, (req, res) => BidsController.update(req, res));
-router.delete('/bid/id/:id', authMiddleware,adminMiddleware, (req, res) => BidsController.deleteId(req, res));
+router.post('/bid', authMiddleware, asyncHandler(BidsController.create));
+router.get('/bids', authMiddleware, asyncHandler(BidsController.getAll));
+router.get('/bid/id/:id', authMiddleware, asyncHandler(BidsController.getOneId));
+router.put('/bid', authMiddleware, adminMiddleware, asyncHandler(BidsController.update));
+router.delete('/bid/id/:id', authMiddleware, adminMiddleware, asyncHandler(BidsController.deleteId));
 
-// Маршруты для логов
-router.post('/logs', authMiddleware, adminMiddleware, (req, res) => LogsController.create(req, res));
-router.get('/logs', authMiddleware, adminMiddleware, (req, res) => LogsController.getAll(req, res));
+
 
 // Маршрут для аутентификации
 router.post('/login', AuthController.login);
 
 
 // router.js (дополнение)
-router.post('/logs', authMiddleware, adminMiddleware, (req, res) => LogsController.create(req, res));
-router.get('/logs', authMiddleware, adminMiddleware, (req, res) => LogsController.getAll(req, res));
+router.post('/logs', authMiddleware, adminMiddleware, asyncHandler(LogsController.create));
+router.get('/logs', authMiddleware, adminMiddleware, asyncHandler(LogsController.getAll));
 
 
 export default router;
